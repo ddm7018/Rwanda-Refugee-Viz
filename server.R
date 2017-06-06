@@ -10,12 +10,13 @@ zipdata <- allzips[sample.int(nrow(allzips), 10000),]
 
 rwanda <- read.csv("data/survey.csv")
 
+
 # By ordering by centile, we ensure that the (comparatively rare) SuperZIPs
 # will be drawn last and thus be easier to see
 zipdata <- zipdata[order(zipdata$centile),]
 
 function(input, output, session) {
-
+ vals <- reactiveValues(count = 1)
   ## Interactive Map ###########################################
 
   # Create the map
@@ -25,12 +26,22 @@ function(input, output, session) {
         urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
         attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
       ) %>%
-      setView(lat =  -2.5717, lng = 29.8231, zoom = 11)
+      setView(lat =  -2.4871, lng = 29.5167, zoom = 15)
+    
   })
 
-  
   observeEvent(input$change, {
    print("changing map-vew")
+   proxy <- leafletProxy("map")
+   print(vals$count)
+   if(vals$count %% 2 == 1){
+     proxy %>% setView(lat = -2.6739, lng = 29.8450, zoom = 15)
+   }
+   else{
+     proxy %>% setView(lat =  -2.4871, lng = 29.5167, zoom = 15)
+   }
+   vals$count <- vals$count + 1
+  
   })
   
   
