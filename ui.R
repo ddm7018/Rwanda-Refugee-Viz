@@ -7,7 +7,7 @@ vars <- c(
 )
 
 
-navbarPage("Superzip", id="nav",
+navbarPage("Rwanda", id="nav",
 
   tabPanel("Interactive map",
     div(class="outer",
