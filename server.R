@@ -53,7 +53,7 @@ function(input, output, session) {
     sizeBy <- input$size
     
     colorData <- rwanda[[colorBy]]
-    pal <- colorBin("viridis", colorData, 7)
+    pal <- colorBin("Blues", colorData, 7)
     radius <- rwanda[[sizeBy]]
     
     leafletProxy("map", data = rwanda) %>%
