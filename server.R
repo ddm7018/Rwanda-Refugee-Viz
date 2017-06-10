@@ -25,7 +25,7 @@ function(input, output, session) {
         urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
         attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
       ) %>%
-      setView(lat =  -2.4871, lng = 29.5167, zoom = 15)
+      setView(lat =  -2.4867, lng = 29.5187, zoom = 16)
     
   })
 
@@ -35,12 +35,12 @@ function(input, output, session) {
   observeEvent(input$change, {
    print("changing map-vew")
    proxy <- leafletProxy("map")
-   print(vals$count)
+
    if(vals$count %% 2 == 1){
-     proxy %>% setView(lat = -2.6739, lng = 29.8450, zoom = 15)
+     proxy %>% setView(lat = -2.67541, lng = 29.84879, zoom = 17)
    }
    else{
-     proxy %>% setView(lat =  -2.4871, lng = 29.5167, zoom = 15)
+     proxy %>% setView(lat =  -2.4867, lng = 29.5187, zoom = 16)
    }
    vals$count <- vals$count + 1
   
@@ -59,7 +59,10 @@ function(input, output, session) {
     leafletProxy("map", data = rwanda) %>%
       clearShapes() %>%
       addCircles(~x, ~y, radius= radius, layerId = ~object_id,
-        stroke=FALSE, fillOpacity=.5, color=pal(colorData))
+        stroke=FALSE, fillOpacity=.5, color=pal(colorData)) %>%
+        clearControls() %>%
+        addLegend(position = "bottomright",
+                        pal = pal, values = colorData, title = input$color)
 
   })
   
@@ -86,6 +89,7 @@ content <- as.character(popupTagList)
       showCirclePopup(event$id, event$lat, event$lng)
     })
   })
+  
   
   
   
