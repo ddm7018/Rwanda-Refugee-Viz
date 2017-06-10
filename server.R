@@ -3,7 +3,7 @@ library(RColorBrewer)
 library(scales)
 library(lattice)
 library(dplyr)
-
+library(mapview)
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 set.seed(100)
 
@@ -29,6 +29,9 @@ function(input, output, session) {
     
   })
 
+
+  
+  
   observeEvent(input$change, {
    print("changing map-vew")
    proxy <- leafletProxy("map")
@@ -55,16 +58,22 @@ function(input, output, session) {
     
     leafletProxy("map", data = rwanda) %>%
       clearShapes() %>%
-      addCircles(~x, ~y, radius= radius,
+      addCircles(~x, ~y, radius= radius, layerId = ~object_id,
         stroke=FALSE, fillOpacity=.5, color=pal(colorData))
+
   })
+  
   showCirclePopup <- function(id, lat, lng) {
-    print(lat)
-    print(lng)
-    content <- as.character(tagList(
-      sprintf("Median household income: test"), tags$br()
-    ))
-    leafletProxy("map") %>% addPopups(lng, lat, content, layerId = id)
+    selectedCircle <- rwanda[rwanda$object_id == id,]
+    popupTagList <- tagList(
+    tags$h4(input$color, eval(parse(text=paste0("selectedCircle$",input$color)))), 
+    tags$h4(input$size, eval(parse(text=paste0("selectedCircle$",input$size))))
+  )
+
+
+
+content <- as.character(popupTagList)    
+    leafletProxy("map") %>% addPopups(lng, lat, content)
   }
   
   # When map is clicked, show a popup with city info

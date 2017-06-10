@@ -30,7 +30,6 @@ navbarPage("Rwanda", id="nav",
         selectInput("color", "Color", vars),
         selectInput("size", "Size", vars),
         actionButton("change", "Change map")
-        
           
       )
 
