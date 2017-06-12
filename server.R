@@ -51,10 +51,21 @@ function(input, output, session) {
   observe({
     colorBy <- input$color
     sizeBy <- input$size
-    
     colorData <- rwanda[[colorBy]]
-    pal <- colorBin("Blues", colorData, 7)
-    radius <- rwanda[[sizeBy]]
+    if(is.factor(colorData)){
+      pal <- colorFactor("viridis", colorData)
+    }
+    else{
+      pal <- colorBin("viridis", colorData, 7)
+    }
+    
+    if(input$static_size == TRUE){
+      radius <- input$slider1
+    }
+    else{
+      radius <- rwanda[[sizeBy]]
+    }
+    
     
     leafletProxy("map", data = rwanda) %>%
       clearShapes() %>%
@@ -78,6 +89,7 @@ function(input, output, session) {
 content <- as.character(popupTagList)    
     leafletProxy("map") %>% addPopups(lng, lat, content)
   }
+  
   
   # When map is clicked, show a popup with city info
   observe({
