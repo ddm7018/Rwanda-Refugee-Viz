@@ -8,11 +8,6 @@ library(dplyr)
 set.seed(100)
 
 
-rwanda <- read.csv("data/survey.csv")
-
-
-# By ordering by centile, we ensure that the (comparatively rare) SuperZIPs
-# will be drawn last and thus be easier to see
 
 function(input, output, session) {
  vals <- reactiveValues(count = 1)

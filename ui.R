@@ -1,10 +1,16 @@
 library(leaflet)
 
 # Choices for drop-downs
+color_vars <- colnames(rwanda)
+
+removeFrom = c("object_id","global_id","row_id","parent_row_id","x", "y","ObjectID","GlobalID")
+for(ele in removeFrom){ 
+  color_vars <- color_vars[color_vars != ele]
+  }
+
 vars <- c(
-  "num_employee" = "num_employee",
-  "avg_customers" = "avg_customers",
-  "leave_camp_support_business" = "leave_camp_support_business"
+  "num_employee",
+  "avg_customers"
 )
 
 
@@ -26,13 +32,17 @@ navbarPage("Rwanda", id="nav",
         width = 330, height = "auto",
 
         h2("Rwanda explorer"),
-
-        selectInput("color", "Color", vars),
-        selectInput("size", "Size", vars),
+      
+        selectInput("color", "Color", color_vars),
+        conditionalPanel(
+          condition = "input.static_size == false",
+          selectInput("size", "Size", vars)),
         actionButton("change", "Change map"),
         checkboxInput("static_size", "Static Radius", FALSE),
+        conditionalPanel(
+        condition = "input.static_size == true",
         sliderInput("slider1", label = h3("Slider"), min = 1, 
-                    max = 10, value = 5)
+                    max = 20, value = 5))
       )
       
       
