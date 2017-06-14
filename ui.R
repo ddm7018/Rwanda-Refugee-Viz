@@ -38,6 +38,7 @@ navbarPage("Rwanda", id="nav",
           condition = "input.static_size == false",
           selectInput("size", "Size", vars)),
         actionButton("change", "Change map"),
+        downloadLink("download", "Download"),
         checkboxInput("static_size", "Static Radius", FALSE),
         conditionalPanel(
         condition = "input.static_size == true",
