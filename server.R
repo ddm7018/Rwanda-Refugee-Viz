@@ -28,7 +28,8 @@ function(input, output, session) {
   
   observeEvent(input$run_models,
                {
-                rwanda <- subset(rwanda, select=c("camp_name","num_employee","market_condition","market_security","cash_food_local", 
+                set.seed(100)
+                 rwanda <- subset(rwanda, select=c("camp_name","num_employee","market_condition","market_security","cash_food_local", 
                                                    "outside_job","competition", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
                                                    "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
                                                    "key_good_demand_change","avg_customers","x", "y"))
@@ -37,10 +38,10 @@ function(input, output, session) {
                 test  <- rwanda[-sample, ]
                 
                 if(input$algo == "Suppor Vector Machines"){
-                  model <- eval(parse(text=paste0("rpart(",input$DV," ~ . , data = train, method= 'class')")))
+                  model <- eval(parse(text=paste0("svm(",input$DV," ~ . , data = train, method= 'class')")))
                 }
                 else if(input$algo == "Decision Trees"){
-                  model <- eval(parse(text=paste0("svm(",input$DV," ~ . , data = train, method= 'class')")))
+                  model <- eval(parse(text=paste0("rpart(",input$DV," ~ . , data = train, method= 'class')")))
                 }
                 pred = predict(model,test , type = "class")
                 predTable <- table(pred, eval(parse(text=paste0("test$",input$DV))))
