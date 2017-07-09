@@ -6,6 +6,7 @@ library(dplyr)
 library(rpart)
 library(e1071)
 library(nnet)
+library(rpart.plot)
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 set.seed(100)
@@ -51,8 +52,10 @@ function(input, output, session) {
                 print("running models")
                 algorithm <- input$algo
                 dv <- input$DV
+                val <- round(val,3)
                 output$text1 <- renderText({sprintf("%s Accuracy is %s percent for %s",algorithm,val,dv)})
-               })
+                output$text2 <- renderPlot({ rpart.plot(model) })
+                })
   
   output$map <- renderLeaflet({
     mymap()

@@ -8,10 +8,7 @@ library(leaflet)
 #  color_vars <- color_vars[color_vars != ele]
 #  }
 
-vars <- c("camp_name","num_employee","market_condition","market_security","cash_food_local", 
-          "outside_job","competition", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
-          "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
-          "key_good_demand_change","avg_customers","x", "y")
+
 
 algos <- c("Suppor Vector Machines", "Decision Trees") 
 
@@ -47,14 +44,16 @@ navbarPage("Rwanda", id="nav",
     tabPanel("Run Models",
              sidebarPanel(id = "controls", class = "panel panel-default",
                           selectInput("algo", "Algorithm", algos),
-                          selectInput("DV", "Dependent Variables", vars),
+                          selectInput("DV", "Dependent Variables", non_numeric_vals),
                           checkboxInput("all_variables", "All Variables Included", FALSE),
                           conditionalPanel(
                             condition = "input.all_variables == false",
                           checkboxGroupInput("IV", "Independent Variables", vars)
                           ),
                           actionButton("run_models", "Run Models")
-                          ),textOutput("text1"))
+                          ),textOutput("text1"),
+                            plotOutput("text2")                  
+             )
                 )
 
 
