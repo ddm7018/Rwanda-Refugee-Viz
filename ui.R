@@ -10,7 +10,7 @@ library(leaflet)
 
 
 
-algos <- c("Suppor Vector Machines", "Decision Trees") 
+algos <- c("Suppor Vector Machines", "Decision Trees", "Nueral Network") 
 
 navbarPage("Rwanda", id="nav",
 
@@ -41,19 +41,31 @@ navbarPage("Rwanda", id="nav",
         sliderInput("slider1", label = h3("Slider"), min = 1, 
                     max = 20, value = 5))
       ))),
-    tabPanel("Run Models",
+    tabPanel("Run Classifcation Models",
              sidebarPanel(id = "controls", class = "panel panel-default",
                           selectInput("algo", "Algorithm", algos),
                           selectInput("DV", "Dependent Variables", non_numeric_vals),
-                          checkboxInput("all_variables", "All Variables Included", FALSE),
-                          conditionalPanel(
-                            condition = "input.all_variables == false",
-                          checkboxGroupInput("IV", "Independent Variables", vars)
-                          ),
+                          #checkboxInput("all_variables", "All Variables Included", TRUE),
+                          #conditionalPanel(
+                          #  condition = "input.all_variables == false",
+                          #checkboxGroupInput("IV", "Independent Variables", vars)
+                          #),
                           actionButton("run_models", "Run Models")
-                          ),textOutput("text1"),
-                            plotOutput("text2")                  
-             )
+                          ),textOutput("accuracy_model"),
+                            plotOutput("plot_model")                  
+             ),
+  tabPanel("Run Regression Models",
+           sidebarPanel(id = "controls", class = "panel panel-default",
+                        selectInput("DV_regression", "Dependent Variables", numeric_vals),
+                        #checkboxInput("all_variables_regressions", "All Variables Included", TRUE),
+                        #conditionalPanel(
+                        #  condition = "input.all_variables1 == false",
+                        #  checkboxGroupInput("IV_regression", "Independent Variables", vars)
+                        #),
+                        actionButton("run_models_regressions", "Run Models")
+                        ),
+           textOutput("accuracy_regression_model")
+           )
                 )
 
 

@@ -7,6 +7,9 @@ library(rpart)
 library(e1071)
 library(nnet)
 library(rpart.plot)
+library(devtools)
+source_url('https://gist.githubusercontent.com/fawda123/7471137/raw/466c1474d0a505ff044412703516c34f1a4684a5/nnet_plot_update.r')
+
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 set.seed(100)
@@ -27,6 +30,12 @@ function(input, output, session) {
       setView(lat =  -2.4867, lng = 29.5187, zoom = 16)
   })
   
+  observeEvent(input$run_models_regressions,{
+    
+    
+    output$accuracy_regression_model <- renderText({print("Test")})
+  })
+  
   observeEvent(input$run_models,
                {
                 set.seed(100)
@@ -44,6 +53,10 @@ function(input, output, session) {
                 else if(input$algo == "Decision Trees"){
                   model <- eval(parse(text=paste0("rpart(",input$DV," ~ . , data = train, method= 'class')")))
                 }
+                else{
+                  model <- eval(parse(text=paste0("nnet(",input$DV," ~ . , data = train, ,linout=FALSE, size=5, trace = FALSE)")))
+
+                }
                 pred = predict(model,test , type = "class")
                 predTable <- table(pred, eval(parse(text=paste0("test$",input$DV))))
                 val <- sum(diag(predTable))/sum(predTable)
@@ -53,9 +66,18 @@ function(input, output, session) {
                 algorithm <- input$algo
                 dv <- input$DV
                 val <- round(val,3)
-                output$text1 <- renderText({sprintf("%s Accuracy is %s percent for %s",algorithm,val,dv)})
-                output$text2 <- renderPlot({ rpart.plot(model) })
-                })
+                output$accuracy_model <- renderText({sprintf("%s Accuracy is %s percent for %s",algorithm,val,dv)})
+                output$plot_model <- renderPlot({ 
+                 
+                  if(algorithm == "Suppor Vector Machines"){
+                    plot(model, rwanda, num_employee ~ business_start)
+                  }
+                  else if(algorithm == "Decision Trees"){
+                    rpart.plot(model) 
+                  }
+                  else{
+                   plot.nnet(model)
+                }})})
   
   output$map <- renderLeaflet({
     mymap()

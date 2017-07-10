@@ -6,6 +6,9 @@ library(rpart)
 library(e1071)
 library(nnet)
 library(rpart.plot)
+library(devtools)
+source_url('https://gist.githubusercontent.com/fawda123/7471137/raw/466c1474d0a505ff044412703516c34f1a4684a5/nnet_plot_update.r')
+
 
 set.seed(100)
 options(scipen=999)
@@ -58,7 +61,7 @@ linear.model5 <- lm(business_start ~ x + y, data = rwanda)
 summary(linear.model5)
 
 #reloading the data for logistic regression analysis
-rwanda  <- read.csv("2017_survey_business_final.csv")
+rwanda  <- read.csv("../survey.csv")
 rwanda$business_start <- as.numeric(rwanda$business_start)
 
 #glm is general logistical models, when you specifict the family as binomial its becomes logistric regression
@@ -77,7 +80,7 @@ summary(log.model3)
 
 
 #machine learning: classfication trees, nuernets and support vector machines
-rwanda                                                         <- read.csv("2017_survey_business_final.csv")
+rwanda                                                         <- read.csv("../survey.csv")
 set.seed(100)
 rwanda[rwanda$business_start == '########',]                   <- NA
 rwanda$sell_food_assistance[rwanda$sell_food_assistance == ""] <- NA
@@ -108,16 +111,17 @@ rpart.plot(tree.model)
 svm.model <- svm(competition ~ . , data = train, method= "class")
 pred = predict(svm.model,test , type = "class")
 predTable <- table(pred, test$competition)
-sum(diag(predTable))/sum(predTable)
 val <- sum(diag(predTable))/sum(predTable)
 val <- round((val*100),2)
 print(sprintf("Accuracy for svm is %s percent",val)) 
 
 #trying nueral network
-nn.model <- nnet(competition ~. , data = train,linout=TRUE, size=10, trace = FALSE)
+nn.model <- nnet(competition ~. , data = train,linout=TRUE, size=5, trace = FALSE)
 pred = predict(nn.model,test , type = "class")
 predTable <- table(pred, test$competition)
 sum(diag(predTable))/sum(predTable)
+plot.nnet(nn.model)
+
 
 tree.model2 <- rpart(key_good_demand_change ~ . , data = train, method= "class")
 pred = predict(tree.model2,test , type = "class")
