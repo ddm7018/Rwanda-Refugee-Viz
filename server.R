@@ -32,8 +32,30 @@ function(input, output, session) {
   
   observeEvent(input$run_models_regressions,{
     
+   
     
-    output$accuracy_regression_model <- renderText({print("Test")})
+    regression_IV <- input$IV_regression
+    regression_IV_str <- ""
+    for(ele in regression_IV){
+      regression_IV_str <- paste(regression_IV_str, ele , "+")
+    }
+    regression_IV_str <- substr(regression_IV_str,2,nchar(regression_IV_str)-2)
+    
+    if (regression_IV_str == ""){
+      model <- eval(parse(text=paste0("lm(as.formula(",input$DV_regression," ~ . ), data = rwanda)")))
+    }
+    else{
+      model <- eval(parse(text=paste0("lm(as.formula(",input$DV_regression," ~ ",regression_IV_str, "), data = rwanda)")))
+    }
+    
+   
+    
+    
+    output$accuracy_regression_model <- renderPrint({
+    
+      
+    summary(model)
+    })
   })
   
   observeEvent(input$run_models,

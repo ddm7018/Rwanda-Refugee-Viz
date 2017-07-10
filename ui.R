@@ -57,14 +57,14 @@ navbarPage("Rwanda", id="nav",
   tabPanel("Run Regression Models",
            sidebarPanel(id = "controls", class = "panel panel-default",
                         selectInput("DV_regression", "Dependent Variables", numeric_vals),
-                        #checkboxInput("all_variables_regressions", "All Variables Included", TRUE),
-                        #conditionalPanel(
-                        #  condition = "input.all_variables1 == false",
-                        #  checkboxGroupInput("IV_regression", "Independent Variables", vars)
-                        #),
+                        checkboxInput("all_variables_regressions", "All Variables Included", TRUE),
+                        conditionalPanel(
+                          condition = "input.all_variables_regressions == false",
+                          checkboxGroupInput("IV_regression", "Independent Variables", vars)
+                        ),
                         actionButton("run_models_regressions", "Run Models")
                         ),
-           textOutput("accuracy_regression_model")
+           verbatimTextOutput("accuracy_regression_model")
            )
                 )
 
