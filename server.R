@@ -105,19 +105,8 @@ function(input, output, session) {
     mymap()
   })
   
-  output$download <- downloadHandler(
-    filename = 'plot.pdf',
-    
-    content = function(file) {
-      # temporarily switch to the temp dir, in case you do not have write
-      # permission to the current working directory
-      owd <- setwd(tempdir())
-      on.exit(setwd(owd))
-      
-      saveWidget(newmap(), "temp.html", selfcontained = FALSE)
-      webshot("temp.html", file = file, cliprect = "viewport")
-    }
-)
+  
+
   
   
   newmap <- reactive({
