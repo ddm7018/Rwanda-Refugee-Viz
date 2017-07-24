@@ -29,55 +29,61 @@ rwanda <- subset(rwanda, select=c("camp_name","competition","num_employee","mark
 mug <- rwanda[rwanda$camp_name == 'mugombwa',]
 kim <- rwanda[rwanda$camp_name == 'kigeme',]
 
-xyplot(avg_customers ~ business_start, data = rwanda,
-       ylab = "Average Number of Customers",
-       xlab = "Days Since Camp Opened",
-       main = "Average Number of Customer VS Days",
-       type = c("p","r"))
-
+run_linear_regression_models <- function(data){
 #linear regression, DV ~ IV, predicting business_start from avg_customer (not signficant)
-linear.model <- lm(business_start ~ avg_customers, data = rwanda)
-summary(linear.model)
+linear.model <- lm(business_start ~ avg_customers, data = data)
+print(summary(linear.model))
 
 #linear regression, DV ~ .(all variables), seeing if any other variables are signficant to business_start(none are signficant)
-linear.model1 <- lm(business_start ~ ., data = rwanda)
-summary(linear.model1)
+# linear.model1 <- lm(business_start ~ ., data = data)
+# print(summary(linear.model1))
 
 #linear regression, DV ~ IV1 + IV2 + IV3 + IV4, key good demand change and customer change camp change are signficant to predicting num of employees
-linear.model2 <- lm(num_employee ~ key_good_demand_change + customer_locations_camp_change + x +y, data = rwanda)
-summary(linear.model2)
+linear.model2 <- lm(num_employee ~ key_good_demand_change + customer_locations_camp_change + x +y, data = data)
+print(summary(linear.model2))
 
 #linear regression, DV ~ IV, predicting average customers from x and y, not signficant
-linear.model3 <- lm(avg_customers ~ x + y , data = rwanda)
-summary(linear.model3)
+linear.model3 <- lm(avg_customers ~ x + y , data = data)
+print(summary(linear.model3))
 
 #linear regression, Dv ~ IV, predicting average customer from num employee, not signficant
-linear.model4 <- lm(avg_customers ~ num_employee , data = rwanda)
-summary(linear.model4)
+linear.model4 <- lm(avg_customers ~ num_employee , data = data)
+print(summary(linear.model4))
 
 #linear regression, DV ~ IV, predicting business start from x and y, the variables x and y 
 # are signficant but the complete model is not signficant
-linear.model5 <- lm(business_start ~ x + y, data = rwanda)
-summary(linear.model5)
+linear.model5 <- lm(business_start ~ x + y, data = data)
+print(summary(linear.model5))
+
+}
+run_linear_regression_models(mug)
+run_linear_regression_models(kim)
 
 #reloading the data for logistic regression analysis
+
 rwanda  <- read.csv("../survey.csv")
 rwanda$business_start <- as.numeric(rwanda$business_start)
-
-#glm is general logistical models, when you specifict the family as binomial its becomes logistric regression
-#outside job is a strong predictor of sell food assistance
-log.model1 <- glm(sell_food_assistance ~ outside_job, data = rwanda, family=binomial)
-summary(log.model1)
-
-
-#logistic regression: avg customer is not a strong predictor of competition
-log.model2 <- glm(competition ~ avg_customers, data = rwanda, family=binomial)
-summary(log.model2)
-
-#logistic regression: business start is not a strong predictor of fincances care
-log.model3 <- glm(finances_care ~ business_start, data = rwanda, family=binomial)
-summary(log.model3)
-
+mug <- rwanda[rwanda$camp_name == 'mugombwa',]
+kim <- rwanda[rwanda$camp_name == 'kigeme',]
+run_logistic_regression_models <- function(data){
+  
+  # #glm is general logistical models, when you specifict the family as binomial its becomes logistric regression
+  # #outside job is a strong predictor of sell food assistance
+  log.model1 <- glm(sell_food_assistance ~ outside_job, data = rwanda, family=binomial)
+  print(summary(log.model1))
+  
+  
+  # #logistic regression: avg customer is not a strong predictor of competition
+  log.model2 <- glm(competition ~ avg_customers, data = data, family=binomial)
+  print(summary(log.model2))
+  
+  # #logistic regression: business start is not a strong predictor of fincances care
+  log.model3 <- glm(finances_care ~ business_start, data = data, family=binomial)
+  print(summary(log.model3))
+  
+}
+run_logistic_regression_models(kim)
+run_logistic_regression_models(mug)
 
 #machine learning: classfication trees, nuernets and support vector machines
 rwanda                                                         <- read.csv("../survey.csv")
@@ -91,12 +97,14 @@ rwanda                                                         <- subset(rwanda,
                                   "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
                                   "key_good_demand_change","avg_customers","x", "y"))
 rwanda                                                        <- na.omit(rwanda)
-
+mug <- rwanda[rwanda$camp_name == 'mugombwa',]
+kim <- rwanda[rwanda$camp_name == 'kigeme',]
+run_classfication_models <- function(data, print = FALSE){
 
 #dividing up the data into training and testing
-sample <- sample.int(n = nrow(rwanda), size = floor(.75*nrow(rwanda)), replace = F)
-train  <- rwanda[sample, ]
-test   <- rwanda[-sample, ]
+sample <- sample.int(n = nrow(data), size = floor(.75*nrow(data)), replace = F)
+train  <- data[sample, ]
+test   <- data[-sample, ]
 
 #predicting competiton using all variables avaialable, 46% accuracy is not great
 tree.model <- rpart(competition ~. , data = train, method= "class")
@@ -119,7 +127,9 @@ print(sprintf("Accuracy for svm is %s percent",val))
 nn.model <- nnet(competition ~. , data = train,linout=TRUE, size=5, trace = FALSE)
 pred = predict(nn.model,test , type = "class")
 predTable <- table(pred, test$competition)
-sum(diag(predTable))/sum(predTable)
+val <- sum(diag(predTable))/sum(predTable)
+val <- round((val*100),2)
+print(sprintf("Accuracy for nueral network predicting competition is %s percent",val)) 
 plot.nnet(nn.model)
 
 
@@ -131,23 +141,30 @@ val <- round((val*100),2)
 print(sprintf("Classfication tree - predicting key_good_demand_change accuracy is %s percent",val)) 
 rpart.plot(tree.model2)
 
-tree.model3 <- rpart(camp_name ~ .-x -y , data = train, method= "class")
-pred = predict(tree.model3,test , type = "class")
-predTable <- table(pred, test$camp_name)
-sum(diag(predTable))/sum(predTable)
-predTable <- table(pred, test$key_good_demand_change)
-val <- sum(diag(predTable))/sum(predTable)
-val <- round((val*100),2)
-print(sprintf("Classfication tree - predicting camp name without x and y accuracy is %s percent",val)) 
-rpart.plot(tree.model3)
+# tree.model3 <- rpart(camp_name ~ .-x -y , data = train, method= "class")
+# pred = predict(tree.model3,test , type = "class")
+# predTable <- table(pred, test$key_good_demand_change)
+# val <- sum(diag(predTable))/sum(predTable)
+# val <- round((val*100),2)
+# print(sprintf("Classfication tree - predicting camp name without x and y accuracy is %s percent",val)) 
+# rpart.plot(tree.model3)
+}
+run_classfication_models(mug)
+run_classfication_models(kim)
 
-
+run_machine_learning_2 <- function(data, remove_camp = TRUE){
 coln <- c()
-for(ele in colnames(rwanda)){
-  if (eval(parse(text=paste0("is.numeric(rwanda$",ele,")"))) == FALSE){
+for(ele in colnames(data)){
+  if (eval(parse(text=paste0("is.numeric(data$",ele,")"))) == FALSE){
     coln <- c(ele, coln)
   }
 }
+if(remove_camp == TRUE){
+coln <- coln[coln != "camp_name"]
+}
+sample <- sample.int(n = nrow(data), size = floor(.75*nrow(data)), replace = F)
+train  <- data[sample, ]
+test   <- data[-sample, ]
 
 #running through all non numeric columns with sufficient data through classifcation tress, neural netwokrks, and SVMs
 for(ele in coln ){
@@ -160,7 +177,6 @@ for(ele in coln ){
   val <- round(val,2)
   print(sprintf("CT Accuracy is %s percent",val))  
   
-
   svm.model <- eval(parse(text=paste0("svm(",ele," ~ . , data = train, method= 'class')")))
   pred <- predict(svm.model,test , type = "class")
   predTable <- table(pred, eval(parse(text=paste0("test$",ele))))
@@ -182,8 +198,9 @@ for(ele in coln ){
   })
   print("-----------------")
 }
-
-
+}
+run_classfication_models_2(mug)
+run_classfication_models_2(kim)
 
 
 
