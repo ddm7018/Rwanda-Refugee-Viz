@@ -1,15 +1,5 @@
 library(leaflet)
 
-# Choices for drop-downs
-#color_vars <- colnames(rwanda)
-
-#removeFrom = c("object_id","global_id","row_id","parent_row_id","x", "y","ObjectID","GlobalID")
-#for(ele in removeFrom){ 
-#  color_vars <- color_vars[color_vars != ele]
-#  }
-
-
-
 algos <- c("Suppor Vector Machines", "Decision Trees", "Nueral Network") 
 
 navbarPage("Rwanda", id="nav",
@@ -44,11 +34,12 @@ navbarPage("Rwanda", id="nav",
              sidebarPanel(id = "controls", class = "panel panel-default",
                           selectInput("algo", "Algorithm", algos),
                           selectInput("DV", "Dependent Variables", non_numeric_vals),
-                          #checkboxInput("all_variables", "All Variables Included", TRUE),
-                          #conditionalPanel(
-                          #  condition = "input.all_variables == false",
-                          #checkboxGroupInput("IV", "Independent Variables", vars)
-                          #),
+                          radioButtons("camps", "Select target Camps:",c("mugombwa", "kigeme", "Both")),
+                          conditionalPanel(
+                            condition = "input.algo == 'Suppor Vector Machines'",
+                            selectInput("svm_plot1", "SVM Plot", numeric_vals),
+                            selectInput("svm_plot2", "SVM Plot", numeric_vals)
+                          ),
                           actionButton("run_models", "Run Models")
                           ),textOutput("accuracy_model"),
                             plotOutput("plot_model")                  

@@ -65,9 +65,17 @@ function(input, output, session) {
                                                    "outside_job","competition", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
                                                    "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
                                                    "key_good_demand_change","avg_customers","x", "y"))
+                 
+                data <- rwanda
+                if(input$camps == "mugombwa"){
+                   data <- rwanda[rwanda$camp_name == 'mugombwa',]
+                }
+                else if(input$camps == "kigeme"){
+                  data <- rwanda[rwanda$camp_name == 'kigeme',]
+                  }
                 sample <- sample.int(n = nrow(rwanda), size = floor(.75*nrow(rwanda)), replace = F)
-                train <- rwanda[sample, ]
-                test  <- rwanda[-sample, ]
+                train <- data[sample, ]
+                test  <- data[-sample, ]
                 
                 if(input$algo == "Suppor Vector Machines"){
                   model <- eval(parse(text=paste0("svm(",input$DV," ~ . , data = train, method= 'class')")))
@@ -92,7 +100,7 @@ function(input, output, session) {
                 output$plot_model <- renderPlot({ 
                  
                   if(algorithm == "Suppor Vector Machines"){
-                    plot(model, rwanda, num_employee ~ business_start)
+                    eval(parse(text=paste0("plot(model, rwanda,",input$svm_plot1," ~ ", input$svm_plot2,")")))
                   }
                   else if(algorithm == "Decision Trees"){
                     rpart.plot(model) 

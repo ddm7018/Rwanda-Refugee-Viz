@@ -140,7 +140,7 @@ val <- sum(diag(predTable))/sum(predTable)
 val <- round((val*100),2)
 print(sprintf("Classfication tree - predicting key_good_demand_change accuracy is %s percent",val)) 
 rpart.plot(tree.model2)
-
+}
 # tree.model3 <- rpart(camp_name ~ .-x -y , data = train, method= "class")
 # pred = predict(tree.model3,test , type = "class")
 # predTable <- table(pred, test$key_good_demand_change)
@@ -148,7 +148,7 @@ rpart.plot(tree.model2)
 # val <- round((val*100),2)
 # print(sprintf("Classfication tree - predicting camp name without x and y accuracy is %s percent",val)) 
 # rpart.plot(tree.model3)
-}
+
 run_classfication_models(mug)
 run_classfication_models(kim)
 
@@ -177,13 +177,17 @@ for(ele in coln ){
   val <- round(val,2)
   print(sprintf("CT Accuracy is %s percent",val))  
   
-  svm.model <- eval(parse(text=paste0("svm(",ele," ~ . , data = train, method= 'class')")))
-  pred <- predict(svm.model,test , type = "class")
-  predTable <- table(pred, eval(parse(text=paste0("test$",ele))))
-  val <- sum(diag(predTable))/sum(predTable)
-  val <- val * 100
-  val <- round(val,2)
-  print(sprintf("SVM Accuracy is %s percent",val))  
+  tryCatch({
+    svm.model <- eval(parse(text=paste0("svm(",ele," ~ . , data = train, method= 'class')")))
+    pred <- predict(svm.model,test , type = "class")
+    predTable <- table(pred, eval(parse(text=paste0("test$",ele))))
+    val <- sum(diag(predTable))/sum(predTable)
+    val <- val * 100
+    val <- round(val,2)
+    print(sprintf("SVM Accuracy is %s percent",val))  
+  }, error = function(e) {
+  })
+  
   
   tryCatch({
   nn.model <- eval(parse(text=paste0("nnet(",ele," ~ . , data = train, ,linout=FALSE, size=5, trace = FALSE)")))
@@ -199,8 +203,8 @@ for(ele in coln ){
   print("-----------------")
 }
 }
-run_classfication_models_2(mug)
-run_classfication_models_2(kim)
+run_machine_learning_2(mug)
+run_machine_learning_2(kim)
 
 
 
