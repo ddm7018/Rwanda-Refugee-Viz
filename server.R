@@ -32,8 +32,15 @@ function(input, output, session) {
   
   observeEvent(input$run_models_regressions,{
     
-   
-    
+    data <- rwanda
+    if(input$camps_reg == "mugombwa"){
+      data <- rwanda[rwanda$camp_name == 'mugombwa',]
+      data$camp_name <- NULL
+    }
+    else if(input$camps_reg == "kigeme"){
+      data <- rwanda[rwanda$camp_name == 'kigeme',]
+      data$camp_name <- NULL
+}
     regression_IV <- input$IV_regression
     regression_IV_str <- ""
     for(ele in regression_IV){
@@ -42,10 +49,10 @@ function(input, output, session) {
     regression_IV_str <- substr(regression_IV_str,2,nchar(regression_IV_str)-2)
     
     if (regression_IV_str == ""){
-      model <- eval(parse(text=paste0("lm(as.formula(",input$DV_regression," ~ . ), data = rwanda)")))
+      model <- eval(parse(text=paste0("lm(as.formula(",input$DV_regression," ~ . ), data = data)")))
     }
     else{
-      model <- eval(parse(text=paste0("lm(as.formula(",input$DV_regression," ~ ",regression_IV_str, "), data = rwanda)")))
+      model <- eval(parse(text=paste0("lm(as.formula(",input$DV_regression," ~ ",regression_IV_str, "), data = data)")))
     }
     
    
@@ -100,7 +107,7 @@ function(input, output, session) {
                 output$plot_model <- renderPlot({ 
                  
                   if(algorithm == "Suppor Vector Machines"){
-                    eval(parse(text=paste0("plot(model, rwanda,",input$svm_plot1," ~ ", input$svm_plot2,")")))
+                    plot(model, rwanda, num_employee ~ business_start)
                   }
                   else if(algorithm == "Decision Trees"){
                     rpart.plot(model) 

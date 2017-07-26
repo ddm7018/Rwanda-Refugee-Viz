@@ -35,11 +35,6 @@ navbarPage("Rwanda", id="nav",
                           selectInput("algo", "Algorithm", algos),
                           selectInput("DV", "Dependent Variables", non_numeric_vals),
                           radioButtons("camps", "Select target Camps:",c("mugombwa", "kigeme", "Both")),
-                          conditionalPanel(
-                            condition = "input.algo == 'Suppor Vector Machines'",
-                            selectInput("svm_plot1", "SVM Plot", numeric_vals),
-                            selectInput("svm_plot2", "SVM Plot", numeric_vals)
-                          ),
                           actionButton("run_models", "Run Models")
                           ),textOutput("accuracy_model"),
                             plotOutput("plot_model")                  
@@ -48,14 +43,13 @@ navbarPage("Rwanda", id="nav",
            sidebarPanel(id = "controls", class = "panel panel-default",
                         selectInput("DV_regression", "Dependent Variables", numeric_vals),
                         checkboxInput("all_variables_regressions", "All Variables Included", TRUE),
+                        radioButtons("camps_reg", "Select target Camps:",c("mugombwa", "kigeme", "Both")),
                         conditionalPanel(
                           condition = "input.all_variables_regressions == false",
                           checkboxGroupInput("IV_regression", "Independent Variables", vars)
                         ),
                         actionButton("run_models_regressions", "Run Models")
                         ),
-           verbatimTextOutput("accuracy_regression_model")
-           )
-                )
+           verbatimTextOutput("accuracy_regression_model")))
 
 
