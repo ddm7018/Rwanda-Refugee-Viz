@@ -9,13 +9,12 @@ library(rpart.plot)
 library(devtools)
 source_url('https://gist.githubusercontent.com/fawda123/7471137/raw/466c1474d0a505ff044412703516c34f1a4684a5/nnet_plot_update.r')
 
-
 set.seed(100)
 options(scipen=999)
 
 #loading in the dataset and preprocessing data
-rwanda                                                         <- read.csv("../survey.csv")
-rwanda[rwanda$business_start == '########',]                   <- NA
+rwanda                                                         <- read.csv("../survey1.csv", header = TRUE)
+rwanda$business_start[rwanda$business_start == '########']     <- NA
 rwanda$sell_food_assistance[rwanda$sell_food_assistance == ""] <- NA
 rwanda$outside_job                                             <- as.numeric(rwanda$outside_job)
 rwanda$business_start <- as.numeric(rwanda$business_start)
@@ -23,7 +22,7 @@ rwanda$business_start <- as.numeric(rwanda$business_start)
 rwanda <- subset(rwanda, select=c("camp_name","competition","num_employee","market_condition","market_security","cash_food_local", 
                                   "outside_job", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
                                   "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
-                                  "key_good_demand_change","avg_customers","x", "y"))
+                                  "key_good_demand_change","avg_customers","sell_food_assistance","finances_care","x", "y"))
 mug <- rwanda[rwanda$camp_name == 'mugombwa',]
 kim <- rwanda[rwanda$camp_name == 'kigeme',]
 
@@ -59,10 +58,7 @@ run_linear_regression_models(kim)
 
 #reloading the data for logistic regression analysis
 
-rwanda  <- read.csv("../survey.csv")
-rwanda$business_start <- as.numeric(rwanda$business_start)
-mug <- rwanda[rwanda$camp_name == 'mugombwa',]
-kim <- rwanda[rwanda$camp_name == 'kigeme',]
+
 run_logistic_regression_models <- function(data){
   
   # #glm is general logistical models, when you specifict the family as binomial its becomes logistric regression
@@ -84,23 +80,25 @@ run_logistic_regression_models(kim)
 run_logistic_regression_models(mug)
 
 #machine learning: classfication trees, nuernets and support vector machines
-rwanda                                                         <- read.csv("../survey.csv")
-set.seed(100)
-rwanda[rwanda$business_start == '########',]                   <- NA
-rwanda$sell_food_assistance[rwanda$sell_food_assistance == ""] <- NA
-rwanda$outside_job                                             <- as.numeric(rwanda$outside_job)
-rwanda$business_start                                          <- as.numeric(rwanda$business_start)
-rwanda                                                         <- subset(rwanda, select=c("camp_name","competition","num_employee","market_condition","market_security","cash_food_local", 
-                                  "outside_job", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
-                                  "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
-                                  "key_good_demand_change","avg_customers","x", "y"))
-rwanda                                                        <- na.omit(rwanda)
-mug <- rwanda[rwanda$camp_name == 'mugombwa',]
-kim <- rwanda[rwanda$camp_name == 'kigeme',]
+#rwanda                                                         <- read.csv("../survey.csv")
+# rwanda[rwanda$business_start == '########',]                   <- NA
+# rwanda$sell_food_assistance[rwanda$sell_food_assistance == ""] <- NA
+# rwanda$outside_job                                             <- as.numeric(rwanda$outside_job)
+# rwanda$business_start                                          <- as.numeric(rwanda$business_start)
+# rwanda                                                         <- subset(rwanda, select=c("camp_name","competition","num_employee","market_condition","market_security","cash_food_local", 
+#                                   "outside_job", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
+#                                   "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
+#                                   "key_good_demand_change","avg_customers","x", "y"))
+# #rwanda                                                        <- na.omit(rwanda)
+# mug <- rwanda[rwanda$camp_name == 'mugombwa',]
+# kim <- rwanda[rwanda$camp_name == 'kigeme',]
+
+kim$sell_food_assistance <- NULL
 
 run_classfication_models <- function(data, print = FALSE){
 
 #dividing up the data into training and testing
+set.seed(100)
 sample <- sample.int(n = nrow(data), size = floor(.75*nrow(data)), replace = F)
 train  <- data[sample, ]
 test   <- data[-sample, ]
@@ -112,10 +110,11 @@ predTable  <- table(pred, test$competition)
 val <- sum(diag(predTable))/sum(predTable)
 val <- round((val*100),2)
 print(sprintf("Accuracy for classifcation decision tree is %s percent",val)) 
-rpart.plot(tree.model)
+#rpart.plot(tree.model)
 
 #support vector machine of the same
 svm.model <- svm(competition ~ . , data = train, method= "class")
+test <- na.omit(test)
 pred = predict(svm.model,test , type = "class")
 predTable <- table(pred, test$competition)
 val <- sum(diag(predTable))/sum(predTable)
@@ -129,7 +128,7 @@ predTable <- table(pred, test$competition)
 val <- sum(diag(predTable))/sum(predTable)
 val <- round((val*100),2)
 print(sprintf("Accuracy for nueral network predicting competition is %s percent",val)) 
-plot.nnet(nn.model)
+#plot.nnet(nn.model)
 
 
 tree.model2 <- rpart(key_good_demand_change ~ . , data = train, method= "class")
@@ -138,10 +137,14 @@ predTable <- table(pred, test$key_good_demand_change)
 val <- sum(diag(predTable))/sum(predTable)
 val <- round((val*100),2)
 print(sprintf("Classfication tree - predicting key_good_demand_change accuracy is %s percent",val)) 
-rpart.plot(tree.model2)
+#rpart.plot(tree.model2)
 }
 run_classfication_models(mug)
 run_classfication_models(kim)
+
+kim$finances_care <- NULL
+mug$finances_care <- NULL
+mug$sell_food_assistance <- NULL
 
 run_machine_learning_2 <- function(data, remove_camp = TRUE){
 coln <- c()
@@ -153,7 +156,8 @@ for(ele in colnames(data)){
 if(remove_camp == TRUE){
 coln <- coln[coln != "camp_name"]
 }
-set.seed(100)
+
+set.seed(100);
 sample <- sample.int(n = nrow(data), size = floor(.75*nrow(data)), replace = F)
 train  <- data[sample, ]
 test   <- data[-sample, ]
@@ -169,11 +173,13 @@ for(ele in coln ){
   
   tryCatch({
     svm.model <- eval(parse(text=paste0("svm(",ele," ~ . , data = train, method= 'class')")))
+    test <- na.omit(test)
     pred <- predict(svm.model,test , type = "class")
     predTable <- table(pred, eval(parse(text=paste0("test$",ele))))
     val <- sum(diag(predTable))/sum(predTable)
     val <- val * 100
     val2 <- round(val,2)
+    test   <- data[-sample, ]
     #print(sprintf("SVM Accuracy is %s percent",val1))  
   }, error = function(e) {
     print("issue")
@@ -190,16 +196,12 @@ for(ele in coln ){
   val3 <- round(val,2)
   #print(sprintf("NN Accuracy is %s percent",val))
   }, warning = function(e) {
-  })
+    })
   print(sprintf("%s , %s , %s , %s",ele,val1,val2,val3))
 }
 }
 run_machine_learning_2(mug)
 run_machine_learning_2(kim)
-
-
-
-
 
 
 
