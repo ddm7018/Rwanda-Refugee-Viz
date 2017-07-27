@@ -80,14 +80,15 @@ function(input, output, session) {
                 train <- data[sample, ]
                 test  <- data[-sample, ]
                 if(input$algo == "Suppor Vector Machines"){
-                  test <- na.omit(test)
+                  browser()
                   model <- eval(parse(text=paste0("svm(",input$DV," ~ . , data = train, method= 'class')")))
+                  test <- na.omit(test)
                 }
                 else if(input$algo == "Decision Trees"){
                   model <- eval(parse(text=paste0("rpart(",input$DV," ~ . , data = train, method= 'class')")))
                 }
                 else{
-                  model <- eval(parse(text=paste0("nnet(",input$DV," ~ . , data = train, ,linout=FALSE, size=5, trace = FALSE)")))
+                  model <- eval(parse(text=paste0("nnet(",input$DV," ~ . , data = train, ,linout=FALSE, size=20, trace = FALSE)")))
 
                 }
                 pred = predict(model,test , type = "class")

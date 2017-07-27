@@ -186,9 +186,9 @@ for(ele in coln ){
     })
   
   tryCatch({
-  nn.model <- eval(parse(text=paste0("nnet(",ele," ~ . , data = train, ,linout=FALSE, size=5, trace = FALSE)")))
+  nn.model <- eval(parse(text=paste0("nnet(",ele," ~ . , data = train, ,linout=FALSE, size=20, trace = FALSE)")))
   pred = predict(nn.model,test , type = "class")
-  predTable <- table(pred, test$competition)
+  predTable <- table(pred, eval(parse(text=paste0("test$",ele))))
   sum(diag(predTable))/sum(predTable)
   val <- sum(diag(predTable))/sum(predTable)
   val <- val * 100
@@ -202,6 +202,7 @@ for(ele in coln ){
 }
 run_machine_learning_2(mug)
 run_machine_learning_2(kim)
+
 
 
 
