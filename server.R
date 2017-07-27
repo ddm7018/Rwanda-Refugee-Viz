@@ -34,11 +34,11 @@ function(input, output, session) {
     
     data <- rwanda
     if(input$camps_reg == "mugombwa"){
-      data <- rwanda[rwanda$camp_name == 'mugombwa',]
+      data <- mug
       data$camp_name <- NULL
     }
     else if(input$camps_reg == "kigeme"){
-      data <- rwanda[rwanda$camp_name == 'kigeme',]
+      data <- kim
       data$camp_name <- NULL
 }
     regression_IV <- input$IV_regression
@@ -67,23 +67,12 @@ function(input, output, session) {
   
   observeEvent(input$run_models,
                {
-                 set.seed(100)
-                 rwanda[rwanda$business_start == '########',]                   <- NA
-                 #rwanda$sell_food_assistance[rwanda$sell_food_assistance == ""] <- NA
-                 rwanda$outside_job                                             <- as.numeric(rwanda$outside_job)
-                 rwanda$business_start                                          <- as.numeric(rwanda$business_start)
-                 rwanda                                                         <- subset(rwanda, select=c("camp_name","competition","num_employee","market_condition","market_security","cash_food_local", 
-                                                                                                           "outside_job", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
-                                                                                                           "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
-                                                                                                           "key_good_demand_change","avg_customers","x", "y"))
-                 rwanda                                                        <- na.omit(rwanda)
-                 
                 data <- rwanda
                 if(input$camps == "mugombwa"){
-                   data <- rwanda[rwanda$camp_name == 'mugombwa',]
+                   data <- mug
                 }
                 else if(input$camps == "kigeme"){
-                  data <- rwanda[rwanda$camp_name == 'kigeme',]
+                  data <- kim
                   }
                 
                 set.seed(100);
@@ -91,6 +80,7 @@ function(input, output, session) {
                 train <- data[sample, ]
                 test  <- data[-sample, ]
                 if(input$algo == "Suppor Vector Machines"){
+                  test <- na.omit(test)
                   model <- eval(parse(text=paste0("svm(",input$DV," ~ . , data = train, method= 'class')")))
                 }
                 else if(input$algo == "Decision Trees"){
@@ -189,7 +179,7 @@ function(input, output, session) {
     
     leafletProxy("map", data = rwanda) %>%
       clearShapes() %>%
-      addCircles(~x, ~y, radius= radius, layerId = ~object_id,
+      addCircles(~x, ~y, radius= radius, layerId = rwanda$object_id,
         stroke=FALSE, fillOpacity=.5, color=pal(colorData)) %>%
         clearControls() %>%
         addLegend(position = "bottomright",
