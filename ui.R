@@ -50,6 +50,8 @@ navbarPage("Rwanda", id="nav",
                         ),
                         actionButton("run_models_regressions", "Run Models")
                         ),
-           verbatimTextOutput("accuracy_regression_model")))
+           verbatimTextOutput("accuracy_regression_model"),
+           plotOutput("plot_regression_model")
+           ))
 
 

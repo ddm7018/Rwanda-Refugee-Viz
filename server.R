@@ -56,6 +56,13 @@ function(input, output, session) {
     output$accuracy_regression_model <- renderPrint({
     summary(model)
     })
+    output$plot_regression_model <- renderPlot({ 
+      par(mfrow = c(2, 2)) 
+      plot(model)
+      par(mfrow = c(1, 1)) 
+    })
+    
+    
   })
   
   observeEvent(input$run_models,
