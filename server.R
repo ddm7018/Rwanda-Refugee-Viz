@@ -35,11 +35,10 @@ function(input, output, session) {
     data <- rwanda
     if(input$camps_reg == "mugombwa"){
       data <- mug
-      data$camp_name <- NULL
+      
     }
     else if(input$camps_reg == "kigeme"){
       data <- kim
-      data$camp_name <- NULL
 }
     regression_IV <- input$IV_regression
     regression_IV_str <- ""
@@ -55,12 +54,7 @@ function(input, output, session) {
       model <- eval(parse(text=paste0("lm(as.formula(",input$DV_regression," ~ ",regression_IV_str, "), data = data)")))
     }
     
-   
-    
-    
     output$accuracy_regression_model <- renderPrint({
-    
-      
     summary(model)
     })
   })
@@ -70,33 +64,32 @@ function(input, output, session) {
                 data <- rwanda
                 if(input$camps == "mugombwa"){
                    data <- mug
+                   data$sell_food_assistance <- as.numeric(data$sell_food_assistance)
+                   
                 }
                 else if(input$camps == "kigeme"){
                   data <- kim
-                  }
-                
-                set.seed(100);
-                sample <- sample.int(n = nrow(data), size = floor(.75*nrow(data)), replace = F)
-                train <- data[sample, ]
-                test  <- data[-sample, ]
-                if(input$algo == "Suppor Vector Machines"){
-                  browser()
-                  model <- eval(parse(text=paste0("svm(",input$DV," ~ . , data = train, method= 'class')")))
-                  test <- na.omit(test)
-                }
-                else if(input$algo == "Decision Trees"){
-                  model <- eval(parse(text=paste0("rpart(",input$DV," ~ . , data = train, method= 'class')")))
-                }
-                else{
-                  model <- eval(parse(text=paste0("nnet(",input$DV," ~ . , data = train, ,linout=FALSE, size=20, trace = FALSE)")))
+                  data$cash_food_local <- NULL
+                  data$sell_food_assistance <- NULL
 
                 }
-                pred = predict(model,test , type = "class")
-                predTable <- table(pred, eval(parse(text=paste0("test$",input$DV))))
-                val <- sum(diag(predTable))/sum(predTable)
+                data$camp_name <- NULL
+                data$market_security <- NULL
+                data$finance_care <- NULL
+                data$business_start <- NULL
+                set.seed(100);
+                if(input$algo == "Suppor Vector Machines"){
+                  model <- eval(parse(text=paste0("tune.svm(",input$DV," ~ . , data = data)")))
+                }
+                else if(input$algo == "Decision Trees"){
+                  model <- eval(parse(text=paste0("tune.rpart(",input$DV," ~ . , data = data)")))
+                }
+                else{
+                  model <- eval(parse(text=paste0("tune.nnet(",input$DV," ~ . , data = data, ,linout=FALSE, size=20, trace = FALSE)")))
+
+                }
+                val <- round((1-model$best.performance),3)
                 val <- val * 100
-  
-                print("running models")
                 algorithm <- input$algo
                 dv <- input$DV
                 val <- round(val,3)
@@ -104,13 +97,14 @@ function(input, output, session) {
                 output$plot_model <- renderPlot({ 
                  
                   if(algorithm == "Suppor Vector Machines"){
-                    plot(model, rwanda, num_employee ~ business_start)
+                    browser()
+                    plot(model$best.model, x~ y, data = data)
                   }
                   else if(algorithm == "Decision Trees"){
-                    rpart.plot(model) 
+                    rpart.plot(model$best.model) 
                   }
                   else{
-                   plot.nnet(model)
+                   plot.nnet(model$best.model)
                 }})})
   
   output$map <- renderLeaflet({

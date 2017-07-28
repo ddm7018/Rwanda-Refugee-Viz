@@ -11,12 +11,11 @@ rwanda <- subset(rwanda, select=c("camp_name","competition","num_employee","mark
                                   "outside_job", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
                                   "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
                                   "key_good_demand_change","avg_customers","sell_food_assistance","finances_care","x", "y"))
+rwanda = rwanda[rwanda$x > 29,]
+rwanda = rwanda[rwanda$x < 30,]
+
 mug <- rwanda[rwanda$camp_name == 'mugombwa',]
 kim <- rwanda[rwanda$camp_name == 'kigeme',]
-kim$sell_food_assistance <- NULL
-kim$finances_care <- NULL
-mug$finances_care <- NULL
-mug$sell_food_assistance <- NULL
 
 
 vars <- c("camp_name","num_employee","market_condition","market_security","cash_food_local", 

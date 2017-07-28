@@ -11,9 +11,14 @@ source_url('https://gist.githubusercontent.com/fawda123/7471137/raw/466c1474d0a5
 
 set.seed(100)
 options(scipen=999)
+options(warn=0)
 
 #loading in the dataset and preprocessing data
 rwanda                                                         <- read.csv("../survey1.csv", header = TRUE)
+rwanda = rwanda[rwanda$x > 29,]
+rwanda = rwanda[rwanda$x < 30,]
+
+
 rwanda$business_start[rwanda$business_start == '########']     <- NA
 rwanda$sell_food_assistance[rwanda$sell_food_assistance == ""] <- NA
 rwanda$outside_job                                             <- as.numeric(rwanda$outside_job)
@@ -79,20 +84,6 @@ run_logistic_regression_models <- function(data){
 run_logistic_regression_models(kim)
 run_logistic_regression_models(mug)
 
-#machine learning: classfication trees, nuernets and support vector machines
-#rwanda                                                         <- read.csv("../survey.csv")
-# rwanda[rwanda$business_start == '########',]                   <- NA
-# rwanda$sell_food_assistance[rwanda$sell_food_assistance == ""] <- NA
-# rwanda$outside_job                                             <- as.numeric(rwanda$outside_job)
-# rwanda$business_start                                          <- as.numeric(rwanda$business_start)
-# rwanda                                                         <- subset(rwanda, select=c("camp_name","competition","num_employee","market_condition","market_security","cash_food_local", 
-#                                   "outside_job", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
-#                                   "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
-#                                   "key_good_demand_change","avg_customers","x", "y"))
-# #rwanda                                                        <- na.omit(rwanda)
-# mug <- rwanda[rwanda$camp_name == 'mugombwa',]
-# kim <- rwanda[rwanda$camp_name == 'kigeme',]
-
 kim$sell_food_assistance <- NULL
 
 run_classfication_models <- function(data, print = FALSE){
@@ -104,7 +95,7 @@ train  <- data[sample, ]
 test   <- data[-sample, ]
 
 #predicting competiton using all variables avaialable, 46% accuracy is not great
-tree.model <- rpart(competition ~. , data = train, method= "class")
+tree.model <- rpart(competition ~. , data = train)
 pred       <- predict(tree.model,test , type = "class")
 predTable  <- table(pred, test$competition)
 val <- sum(diag(predTable))/sum(predTable)
@@ -113,7 +104,7 @@ print(sprintf("Accuracy for classifcation decision tree is %s percent",val))
 #rpart.plot(tree.model)
 
 #support vector machine of the same
-svm.model <- svm(competition ~ . , data = train, method= "class")
+svm.model <- svm(competition ~ . , data = train)
 test <- na.omit(test)
 pred = predict(svm.model,test , type = "class")
 predTable <- table(pred, test$competition)
@@ -142,10 +133,30 @@ print(sprintf("Classfication tree - predicting key_good_demand_change accuracy i
 run_classfication_models(mug)
 run_classfication_models(kim)
 
-kim$finances_care <- NULL
-mug$finances_care <- NULL
-mug$sell_food_assistance <- NULL
 
+mug$finances_care <- NULL
+mug$sell_food_assistance <- as.numeric(mug$sell_food_assistance)
+mug$market_security <- NULL
+
+#finance care was not collected for this camp and sell_food assitance has some bug
+kim$finances_care <- NULL
+kim$market_security <- NULL
+kim$cash_food_local <- NULL
+
+
+run_classfication_by_ele <- function(data, ele){
+  set.seed(100);
+  data$business_start <-NULL
+  tune.model1 <- eval(parse(text=paste0("tune.svm(",ele,"~ . ,data=data)")))
+  val <- round((1-tune.model1$best.performance),3)
+  #plot(tune.model1$best.model, x ~ y, data= data)
+  
+  tune.model2 <- eval(parse(text=paste0("tune.nnet(",ele," ~ . , data = data, ,linout=FALSE, size=10, trace = FALSE)")))
+  val1 <- round((1-tune.model2$best.performance),3)
+  tune.model3 <- eval(parse(text=paste0("tune.rpart(",ele,"~ . ,data=data)")))
+  val2 <- round((1-tune.model3$best.performance),3)
+  print(sprintf("%s : %s, %s,  %s",ele,val ,val1, val2))
+}
 run_machine_learning_2 <- function(data, remove_camp = TRUE){
 coln <- c()
 for(ele in colnames(data)){
@@ -157,51 +168,16 @@ if(remove_camp == TRUE){
 coln <- coln[coln != "camp_name"]
 }
 
-set.seed(100);
-sample <- sample.int(n = nrow(data), size = floor(.75*nrow(data)), replace = F)
-train  <- data[sample, ]
-test   <- data[-sample, ]
-
 #running through all non numeric columns with sufficient data through classifcation tress, neural netwokrks, and SVMs
 for(ele in coln ){
-  tree.model <- eval(parse(text=paste0("rpart(",ele," ~ . , data = train, method= 'class')")))
-  pred = predict(tree.model,test , type = "class")
-  predTable <- table(pred, eval(parse(text=paste0("test$",ele))))
-  val <- sum(diag(predTable))/sum(predTable)
-  val <- val * 100
-  val1 <- round(val,2)
-  
-  tryCatch({
-    svm.model <- eval(parse(text=paste0("svm(",ele," ~ . , data = train, method= 'class')")))
-    test <- na.omit(test)
-    pred <- predict(svm.model,test , type = "class")
-    predTable <- table(pred, eval(parse(text=paste0("test$",ele))))
-    val <- sum(diag(predTable))/sum(predTable)
-    val <- val * 100
-    val2 <- round(val,2)
-    test   <- data[-sample, ]
-    #print(sprintf("SVM Accuracy is %s percent",val1))  
-  }, error = function(e) {
-    print("issue")
-    })
-  
-  tryCatch({
-  nn.model <- eval(parse(text=paste0("nnet(",ele," ~ . , data = train, ,linout=FALSE, size=20, trace = FALSE)")))
-  pred = predict(nn.model,test , type = "class")
-  predTable <- table(pred, eval(parse(text=paste0("test$",ele))))
-  sum(diag(predTable))/sum(predTable)
-  val <- sum(diag(predTable))/sum(predTable)
-  val <- val * 100
-  val3 <- 0
-  val3 <- round(val,2)
-  #print(sprintf("NN Accuracy is %s percent",val))
-  }, warning = function(e) {
-    })
-  print(sprintf("%s , %s , %s , %s",ele,val1,val2,val3))
+  run_classfication_by_ele(data, ele)
 }
 }
-run_machine_learning_2(mug)
-run_machine_learning_2(kim)
+
+suppressWarnings(run_machine_learning_2(mug))
+suppressWarnings(run_machine_learning_2(kim))
+
+
 
 
 

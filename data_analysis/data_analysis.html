@@ -118,7 +118,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">data_analysis.r</h1>
 <h4 class="author"><em>danielmooney</em></h4>
-<h4 class="date"><em>Thu Jul 27 12:34:31 2017</em></h4>
+<h4 class="date"><em>Fri Jul 28 14:50:08 2017</em></h4>
 
 </div>
 
@@ -141,9 +141,14 @@ source_url('https://gist.githubusercontent.com/fawda123/7471137/raw/466c1474d0a5
 <pre><code>## SHA-1 hash of file is 74c80bd5ddbc17ab3ae5ece9c0ed9beb612e87ef</code></pre>
 <pre class="r"><code>set.seed(100)
 options(scipen=999)
+options(warn=0)
 
 #loading in the dataset and preprocessing data
 rwanda                                                         &lt;- read.csv(&quot;../survey1.csv&quot;, header = TRUE)
+rwanda = rwanda[rwanda$x &gt; 29,]
+rwanda = rwanda[rwanda$x &lt; 30,]
+
+
 rwanda$business_start[rwanda$business_start == '########']     &lt;- NA
 rwanda$sell_food_assistance[rwanda$sell_food_assistance == &quot;&quot;] &lt;- NA
 rwanda$outside_job                                             &lt;- as.numeric(rwanda$outside_job)
@@ -291,19 +296,19 @@ run_linear_regression_models(mug)</code></pre>
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -43.521 -22.216   3.564  21.479  41.691 
+## -43.935 -22.517   4.041  21.728  41.507 
 ## 
 ## Coefficients:
 ##               Estimate Std. Error t value           Pr(&gt;|t|)    
-## (Intercept)   45.09668    4.56562   9.877 0.0000000000000105 ***
-## avg_customers  0.04239    0.11784   0.360               0.72    
+## (Intercept)   45.58873    4.63416   9.838 0.0000000000000145 ***
+## avg_customers  0.03463    0.11877   0.292              0.772    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 26.06 on 67 degrees of freedom
-##   (24 observations deleted due to missingness)
-## Multiple R-squared:  0.001928,   Adjusted R-squared:  -0.01297 
-## F-statistic: 0.1294 on 1 and 67 DF,  p-value: 0.7202
+## Residual standard error: 26.16 on 66 degrees of freedom
+##   (22 observations deleted due to missingness)
+## Multiple R-squared:  0.001286,   Adjusted R-squared:  -0.01385 
+## F-statistic: 0.08499 on 1 and 66 DF,  p-value: 0.7716
 ## 
 ## 
 ## Call:
@@ -311,28 +316,20 @@ run_linear_regression_models(mug)</code></pre>
 ##     x + y, data = data)
 ## 
 ## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -54.196  -1.493  -1.201  -0.491  49.501 
+##    Min     1Q Median     3Q    Max 
+## -3.165 -1.757 -0.979  0.073 36.199 
 ## 
 ## Coefficients:
-##                                   Estimate Std. Error t value    Pr(&gt;|t|)
-## (Intercept)                       18.84770    3.75544   5.019 0.000002687
-## key_good_demand_changeyes         -0.57960    2.79843  -0.207       0.836
-## customer_locations_camp_changeyes  0.87123    2.42797   0.359       0.721
-## x                                 -0.53673    0.09734  -5.514 0.000000346
-## y                                  0.32207    0.14509   2.220       0.029
-##                                      
-## (Intercept)                       ***
-## key_good_demand_changeyes            
-## customer_locations_camp_changeyes    
-## x                                 ***
-## y                                 *  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+##                                     Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)                       -8229.9669  5059.2220  -1.627    0.107
+## key_good_demand_changeyes            -0.3529     1.4564  -0.242    0.809
+## customer_locations_camp_changeyes     0.6256     1.2430   0.503    0.616
+## x                                   252.1128   157.5601   1.600    0.113
+## y                                  -317.5648   196.5361  -1.616    0.110
 ## 
-## Residual standard error: 9.117 on 88 degrees of freedom
-## Multiple R-squared:  0.4534, Adjusted R-squared:  0.4285 
-## F-statistic: 18.25 on 4 and 88 DF,  p-value: 0.00000000006021
+## Residual standard error: 4.66 on 85 degrees of freedom
+## Multiple R-squared:  0.03621,    Adjusted R-squared:  -0.009143 
+## F-statistic: 0.7984 on 4 and 85 DF,  p-value: 0.5295
 ## 
 ## 
 ## Call:
@@ -340,19 +337,17 @@ run_linear_regression_models(mug)</code></pre>
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -28.172 -18.173  -8.173   6.826 121.828 
+## -28.889 -16.574  -7.430   5.037 127.042 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)  
-## (Intercept)  17.7637     9.8041   1.812   0.0733 .
-## x             0.3219     0.2998   1.074   0.2859  
-## y            -0.3644     0.4432  -0.822   0.4131  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -48197.1    30695.9   -1.57    0.120
+## x             1470.5      955.1    1.54    0.127
+## y            -1936.8     1195.6   -1.62    0.109
 ## 
-## Residual standard error: 28.36 on 90 degrees of freedom
-## Multiple R-squared:  0.01391,    Adjusted R-squared:  -0.008006 
-## F-statistic: 0.6346 on 2 and 90 DF,  p-value: 0.5325
+## Residual standard error: 28.4 on 87 degrees of freedom
+## Multiple R-squared:  0.03067,    Adjusted R-squared:  0.008385 
+## F-statistic: 1.376 on 2 and 87 DF,  p-value: 0.258
 ## 
 ## 
 ## Call:
@@ -360,18 +355,18 @@ run_linear_regression_models(mug)</code></pre>
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -27.959 -17.959  -7.959   7.041 122.196 
+## -28.345 -18.345  -8.345   6.655 121.775 
 ## 
 ## Coefficients:
-##              Estimate Std. Error t value           Pr(&gt;|t|)    
-## (Intercept)   28.1139     3.0626   9.180 0.0000000000000133 ***
-## num_employee  -0.1547     0.2450  -0.631              0.529    
+##              Estimate Std. Error t value          Pr(&gt;|t|)    
+## (Intercept)   28.4662     3.4038   8.363 0.000000000000837 ***
+## num_employee  -0.1207     0.6552  -0.184             0.854    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 28.34 on 91 degrees of freedom
-## Multiple R-squared:  0.004363,   Adjusted R-squared:  -0.006578 
-## F-statistic: 0.3988 on 1 and 91 DF,  p-value: 0.5293
+## Residual standard error: 28.67 on 88 degrees of freedom
+## Multiple R-squared:  0.0003856,  Adjusted R-squared:  -0.01097 
+## F-statistic: 0.03395 on 1 and 88 DF,  p-value: 0.8542
 ## 
 ## 
 ## Call:
@@ -379,18 +374,20 @@ run_linear_regression_models(mug)</code></pre>
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -43.995 -20.209   4.489  21.575  41.185 
+## -46.337 -22.226   2.204  17.034  45.430 
 ## 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)
-## (Intercept)  11206.5    22562.4   0.497    0.621
-## x             -328.5      664.2  -0.495    0.623
-## y              588.0     1188.4   0.495    0.622
+##             Estimate Std. Error t value Pr(&gt;|t|)  
+## (Intercept)  61774.3    30601.2   2.019   0.0476 *
+## x            -1992.7      954.5  -2.088   0.0408 *
+## y             1166.3     1175.3   0.992   0.3247  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 26.13 on 66 degrees of freedom
-##   (24 observations deleted due to missingness)
-## Multiple R-squared:  0.01193,    Adjusted R-squared:  -0.01801 
-## F-statistic: 0.3984 on 2 and 66 DF,  p-value: 0.673</code></pre>
+## Residual standard error: 25.27 on 65 degrees of freedom
+##   (22 observations deleted due to missingness)
+## Multiple R-squared:  0.08214,    Adjusted R-squared:  0.05389 
+## F-statistic: 2.908 on 2 and 65 DF,  p-value: 0.0617</code></pre>
 <pre class="r"><code>#reloading the data for logistic regression analysis
 
 
@@ -430,7 +427,7 @@ run_logistic_regression_models(kim)</code></pre>
 ## 
 ##     Null deviance: 46.626  on 36  degrees of freedom
 ## Residual deviance: 46.213  on 35  degrees of freedom
-##   (93 observations deleted due to missingness)
+##   (90 observations deleted due to missingness)
 ## AIC: 50.213
 ## 
 ## Number of Fisher Scoring iterations: 4
@@ -442,18 +439,18 @@ run_logistic_regression_models(kim)</code></pre>
 ## 
 ## Deviance Residuals: 
 ##    Min      1Q  Median      3Q     Max  
-## -1.013  -1.010  -1.002   1.353   1.387  
+## -1.020  -1.015  -1.003   1.347   1.394  
 ## 
 ## Coefficients:
 ##                 Estimate Std. Error z value Pr(&gt;|z|)
-## (Intercept)   -0.3970184  0.2968713  -1.337    0.181
-## avg_customers -0.0006329  0.0075720  -0.084    0.933
+## (Intercept)   -0.3804101  0.3034038  -1.254    0.210
+## avg_customers -0.0008915  0.0076319  -0.117    0.907
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 125.02  on 92  degrees of freedom
-## Residual deviance: 125.01  on 91  degrees of freedom
-## AIC: 129.01
+##     Null deviance: 121.14  on 89  degrees of freedom
+## Residual deviance: 121.13  on 88  degrees of freedom
+## AIC: 125.13
 ## 
 ## Number of Fisher Scoring iterations: 4
 ## 
@@ -464,19 +461,19 @@ run_logistic_regression_models(kim)</code></pre>
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -1.7362  -1.2656   0.7769   0.9291   1.1874  
+## -1.7348  -1.2760   0.7780   0.9157   1.1528  
 ## 
 ## Coefficients:
 ##                Estimate Std. Error z value Pr(&gt;|z|)
-## (Intercept)    -0.05407    0.50830  -0.106    0.915
-## business_start  0.01524    0.01012   1.506    0.132
+## (Intercept)     0.02961    0.51439   0.058    0.954
+## business_start  0.01423    0.01017   1.399    0.162
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 89.160  on 68  degrees of freedom
-## Residual deviance: 86.821  on 67  degrees of freedom
-##   (24 observations deleted due to missingness)
-## AIC: 90.821
+##     Null deviance: 87.021  on 67  degrees of freedom
+## Residual deviance: 85.013  on 66  degrees of freedom
+##   (22 observations deleted due to missingness)
+## AIC: 89.013
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
 <pre class="r"><code>run_logistic_regression_models(mug)</code></pre>
@@ -498,7 +495,7 @@ run_logistic_regression_models(kim)</code></pre>
 ## 
 ##     Null deviance: 46.626  on 36  degrees of freedom
 ## Residual deviance: 46.213  on 35  degrees of freedom
-##   (93 observations deleted due to missingness)
+##   (90 observations deleted due to missingness)
 ## AIC: 50.213
 ## 
 ## Number of Fisher Scoring iterations: 4
@@ -547,21 +544,7 @@ run_logistic_regression_models(kim)</code></pre>
 ## AIC: 44.958
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
-<pre class="r"><code>#machine learning: classfication trees, nuernets and support vector machines
-#rwanda                                                         &lt;- read.csv(&quot;../survey.csv&quot;)
-# rwanda[rwanda$business_start == '########',]                   &lt;- NA
-# rwanda$sell_food_assistance[rwanda$sell_food_assistance == &quot;&quot;] &lt;- NA
-# rwanda$outside_job                                             &lt;- as.numeric(rwanda$outside_job)
-# rwanda$business_start                                          &lt;- as.numeric(rwanda$business_start)
-# rwanda                                                         &lt;- subset(rwanda, select=c(&quot;camp_name&quot;,&quot;competition&quot;,&quot;num_employee&quot;,&quot;market_condition&quot;,&quot;market_security&quot;,&quot;cash_food_local&quot;, 
-#                                   &quot;outside_job&quot;, &quot;income_compare&quot;,&quot;business_start&quot;, &quot;customer_locations&quot;, &quot;customer_locations_camp_change&quot;,
-#                                   &quot;entrepreneurship_training&quot;, &quot;training_grow&quot;, &quot;business_leave_camp&quot; ,&quot;leave_camp_support_business&quot;, &quot;id_problem_fequency&quot;,
-#                                   &quot;key_good_demand_change&quot;,&quot;avg_customers&quot;,&quot;x&quot;, &quot;y&quot;))
-# #rwanda                                                        &lt;- na.omit(rwanda)
-# mug &lt;- rwanda[rwanda$camp_name == 'mugombwa',]
-# kim &lt;- rwanda[rwanda$camp_name == 'kigeme',]
-
-kim$sell_food_assistance &lt;- NULL
+<pre class="r"><code>kim$sell_food_assistance &lt;- NULL
 
 run_classfication_models &lt;- function(data, print = FALSE){
 
@@ -572,7 +555,7 @@ train  &lt;- data[sample, ]
 test   &lt;- data[-sample, ]
 
 #predicting competiton using all variables avaialable, 46% accuracy is not great
-tree.model &lt;- rpart(competition ~. , data = train, method= &quot;class&quot;)
+tree.model &lt;- rpart(competition ~. , data = train)
 pred       &lt;- predict(tree.model,test , type = &quot;class&quot;)
 predTable  &lt;- table(pred, test$competition)
 val &lt;- sum(diag(predTable))/sum(predTable)
@@ -581,7 +564,7 @@ print(sprintf(&quot;Accuracy for classifcation decision tree is %s percent&quot;
 #rpart.plot(tree.model)
 
 #support vector machine of the same
-svm.model &lt;- svm(competition ~ . , data = train, method= &quot;class&quot;)
+svm.model &lt;- svm(competition ~ . , data = train)
 test &lt;- na.omit(test)
 pred = predict(svm.model,test , type = &quot;class&quot;)
 predTable &lt;- table(pred, test$competition)
@@ -613,14 +596,33 @@ run_classfication_models(mug)</code></pre>
 ## [1] &quot;Accuracy for nueral network predicting competition is 22.22 percent&quot;
 ## [1] &quot;Classfication tree - predicting key_good_demand_change accuracy is 100 percent&quot;</code></pre>
 <pre class="r"><code>run_classfication_models(kim)</code></pre>
-<pre><code>## [1] &quot;Accuracy for classifcation decision tree is 45.83 percent&quot;
+<pre><code>## [1] &quot;Accuracy for classifcation decision tree is 56.52 percent&quot;
 ## [1] &quot;Accuracy for svm is 56.25 percent&quot;
-## [1] &quot;Accuracy for nueral network predicting competition is 56.25 percent&quot;
+## [1] &quot;Accuracy for nueral network predicting competition is 50 percent&quot;
 ## [1] &quot;Classfication tree - predicting key_good_demand_change accuracy is 81.25 percent&quot;</code></pre>
-<pre class="r"><code>kim$finances_care &lt;- NULL
-mug$finances_care &lt;- NULL
-mug$sell_food_assistance &lt;- NULL
+<pre class="r"><code>mug$finances_care &lt;- NULL
+mug$sell_food_assistance &lt;- as.numeric(mug$sell_food_assistance)
+mug$market_security &lt;- NULL
 
+#finance care was not collected for this camp and sell_food assitance has some bug
+kim$finances_care &lt;- NULL
+kim$market_security &lt;- NULL
+kim$cash_food_local &lt;- NULL
+
+
+run_classfication_by_ele &lt;- function(data, ele){
+  set.seed(100);
+  data$business_start &lt;-NULL
+  tune.model1 &lt;- eval(parse(text=paste0(&quot;tune.svm(&quot;,ele,&quot;~ . ,data=data)&quot;)))
+  val &lt;- round((1-tune.model1$best.performance),3)
+  #plot(tune.model1$best.model, x ~ y, data= data)
+  
+  tune.model2 &lt;- eval(parse(text=paste0(&quot;tune.nnet(&quot;,ele,&quot; ~ . , data = data, ,linout=FALSE, size=10, trace = FALSE)&quot;)))
+  val1 &lt;- round((1-tune.model2$best.performance),3)
+  tune.model3 &lt;- eval(parse(text=paste0(&quot;tune.rpart(&quot;,ele,&quot;~ . ,data=data)&quot;)))
+  val2 &lt;- round((1-tune.model3$best.performance),3)
+  print(sprintf(&quot;%s : %s, %s,  %s&quot;,ele,val ,val1, val2))
+}
 run_machine_learning_2 &lt;- function(data, remove_camp = TRUE){
 coln &lt;- c()
 for(ele in colnames(data)){
@@ -632,77 +634,37 @@ if(remove_camp == TRUE){
 coln &lt;- coln[coln != &quot;camp_name&quot;]
 }
 
-set.seed(100);
-sample &lt;- sample.int(n = nrow(data), size = floor(.75*nrow(data)), replace = F)
-train  &lt;- data[sample, ]
-test   &lt;- data[-sample, ]
-
 #running through all non numeric columns with sufficient data through classifcation tress, neural netwokrks, and SVMs
 for(ele in coln ){
-  tree.model &lt;- eval(parse(text=paste0(&quot;rpart(&quot;,ele,&quot; ~ . , data = train, method= 'class')&quot;)))
-  pred = predict(tree.model,test , type = &quot;class&quot;)
-  predTable &lt;- table(pred, eval(parse(text=paste0(&quot;test$&quot;,ele))))
-  val &lt;- sum(diag(predTable))/sum(predTable)
-  val &lt;- val * 100
-  val1 &lt;- round(val,2)
-  
-  tryCatch({
-    svm.model &lt;- eval(parse(text=paste0(&quot;svm(&quot;,ele,&quot; ~ . , data = train, method= 'class')&quot;)))
-    test &lt;- na.omit(test)
-    pred &lt;- predict(svm.model,test , type = &quot;class&quot;)
-    predTable &lt;- table(pred, eval(parse(text=paste0(&quot;test$&quot;,ele))))
-    val &lt;- sum(diag(predTable))/sum(predTable)
-    val &lt;- val * 100
-    val2 &lt;- round(val,2)
-    test   &lt;- data[-sample, ]
-    #print(sprintf(&quot;SVM Accuracy is %s percent&quot;,val1))  
-  }, error = function(e) {
-    print(&quot;issue&quot;)
-    })
-  
-  tryCatch({
-  nn.model &lt;- eval(parse(text=paste0(&quot;nnet(&quot;,ele,&quot; ~ . , data = train, ,linout=FALSE, size=5, trace = FALSE)&quot;)))
-  pred = predict(nn.model,test , type = &quot;class&quot;)
-  predTable &lt;- table(pred, test$competition)
-  sum(diag(predTable))/sum(predTable)
-  val &lt;- sum(diag(predTable))/sum(predTable)
-  val &lt;- val * 100
-  val3 &lt;- 0
-  val3 &lt;- round(val,2)
-  #print(sprintf(&quot;NN Accuracy is %s percent&quot;,val))
-  }, warning = function(e) {
-    })
-  print(sprintf(&quot;%s , %s , %s , %s&quot;,ele,val1,val2,val3))
+  run_classfication_by_ele(data, ele)
 }
 }
-run_machine_learning_2(mug)</code></pre>
-<pre><code>## [1] &quot;key_good_demand_change , 100 , 100 , 33.33&quot;
-## [1] &quot;id_problem_fequency , 90 , 100 , 11.11&quot;
-## [1] &quot;leave_camp_support_business , 90 , 88.89 , 11.11&quot;
-## [1] &quot;business_leave_camp , 90 , 66.67 , 22.22&quot;
-## [1] &quot;training_grow , 70 , 66.67 , 22.22&quot;
-## [1] &quot;entrepreneurship_training , 80 , 66.67 , 33.33&quot;
-## [1] &quot;customer_locations_camp_change , 90 , 88.89 , 33.33&quot;
-## [1] &quot;customer_locations , 60 , 55.56 , 33.33&quot;
-## [1] &quot;income_compare , 90 , 88.89 , 33.33&quot;
-## [1] &quot;cash_food_local , 90 , 100 , 33.33&quot;
-## [1] &quot;market_security , 100 , 100 , 33.33&quot;
-## [1] &quot;market_condition , 80 , 88.89 , 33.33&quot;
-## [1] &quot;competition , 40 , 22.22 , 33.33&quot;</code></pre>
-<pre class="r"><code>run_machine_learning_2(kim)</code></pre>
-<pre><code>## [1] &quot;key_good_demand_change , 83.33 , 68.75 , 12.5&quot;
-## [1] &quot;id_problem_fequency , 37.5 , 50 , 12.5&quot;
-## [1] &quot;leave_camp_support_business , 41.67 , 37.5 , 12.5&quot;
-## [1] &quot;business_leave_camp , 50 , 87.5 , 37.5&quot;
-## [1] &quot;training_grow , 29.17 , 18.75 , 43.75&quot;
-## [1] &quot;entrepreneurship_training , 62.5 , 62.5 , 31.25&quot;
-## [1] &quot;customer_locations_camp_change , 79.17 , 37.5 , 56.25&quot;
-## [1] &quot;customer_locations , 79.17 , 56.25 , 18.75&quot;
-## [1] &quot;income_compare , 50 , 56.25 , 18.75&quot;
-## [1] &quot;cash_food_local , 100 , 100 , 56.25&quot;
-## [1] &quot;market_security , 79.17 , 81.25 , 50&quot;
-## [1] &quot;market_condition , 66.67 , 43.75 , 31.25&quot;
-## [1] &quot;competition , 45.83 , 56.25 , 56.25&quot;</code></pre>
+
+suppressWarnings(run_machine_learning_2(mug))</code></pre>
+<pre><code>## [1] &quot;key_good_demand_change : 0.892, 0.905,  0.9&quot;
+## [1] &quot;id_problem_fequency : 0.767, 0.685,  0.808&quot;
+## [1] &quot;leave_camp_support_business : 0.733, 0.635,  0.725&quot;
+## [1] &quot;business_leave_camp : 0.658, 0.712,  0.642&quot;
+## [1] &quot;training_grow : 0.792, 0.655,  0.833&quot;
+## [1] &quot;entrepreneurship_training : 0.725, 0.735,  0.8&quot;
+## [1] &quot;customer_locations_camp_change : 0.817, 0.813,  0.817&quot;
+## [1] &quot;customer_locations : 0.758, 0.767,  0.683&quot;
+## [1] &quot;income_compare : 0.8, 0.75,  0.808&quot;
+## [1] &quot;cash_food_local : 0.892, 0.87,  0.892&quot;
+## [1] &quot;market_condition : 0.725, 0.175,  0.783&quot;
+## [1] &quot;competition : 0.55, 0.318,  0.417&quot;</code></pre>
+<pre class="r"><code>suppressWarnings(run_machine_learning_2(kim))</code></pre>
+<pre><code>## [1] &quot;key_good_demand_change : 0.756, 0.716,  0.822&quot;
+## [1] &quot;id_problem_fequency : 0.667, 0.571,  0.6&quot;
+## [1] &quot;leave_camp_support_business : 0.367, 0.393,  0.344&quot;
+## [1] &quot;business_leave_camp : 0.822, 0.722,  0.722&quot;
+## [1] &quot;training_grow : 0.511, 0.404,  0.389&quot;
+## [1] &quot;entrepreneurship_training : 0.478, 0.587,  0.578&quot;
+## [1] &quot;customer_locations_camp_change : 0.711, 0.713,  0.744&quot;
+## [1] &quot;customer_locations : 0.744, 0.76,  0.778&quot;
+## [1] &quot;income_compare : 0.544, 0.462,  0.522&quot;
+## [1] &quot;market_condition : 0.622, 0.507,  0.6&quot;
+## [1] &quot;competition : 0.6, 0.464,  0.533&quot;</code></pre>
 
 
 
