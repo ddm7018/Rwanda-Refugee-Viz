@@ -31,27 +31,26 @@ function(input, output, session) {
   })
   
   observeEvent(input$run_models_regressions,{
-    
-    data <- rwanda
+    data1 <- rwanda
     if(input$camps_reg == "mugombwa"){
-      data <- mug
+      data1 <- mug
       
     }
     else if(input$camps_reg == "kigeme"){
-      data <- kim
-}
+      data1 <- kim
+     }
     regression_IV <- input$IV_regression
     regression_IV_str <- ""
     for(ele in regression_IV){
       regression_IV_str <- paste(regression_IV_str, ele , "+")
     }
     regression_IV_str <- substr(regression_IV_str,2,nchar(regression_IV_str)-2)
-    
+    data1$camp_name <- NULL
     if (regression_IV_str == ""){
-      model <- eval(parse(text=paste0("lm(as.formula(",input$DV_regression," ~ . ), data = data)")))
+      model <- eval(parse(text=paste0("lm(as.formula(",input$DV_regression," ~ . ), data = data1)")))
     }
     else{
-      model <- eval(parse(text=paste0("lm(as.formula(",input$DV_regression," ~ ",regression_IV_str, "), data = data)")))
+      model <- eval(parse(text=paste0("lm(as.formula(",input$DV_regression," ~ ",regression_IV_str, "), data = data1)")))
     }
     
     output$accuracy_regression_model <- renderPrint({
@@ -64,7 +63,6 @@ function(input, output, session) {
                 data <- rwanda
                 if(input$camps == "mugombwa"){
                    data <- mug
-                   data$sell_food_assistance <- as.numeric(data$sell_food_assistance)
                    
                 }
                 else if(input$camps == "kigeme"){
@@ -97,7 +95,6 @@ function(input, output, session) {
                 output$plot_model <- renderPlot({ 
                  
                   if(algorithm == "Suppor Vector Machines"){
-                    browser()
                     plot(model$best.model, x~ y, data = data)
                   }
                   else if(algorithm == "Decision Trees"){

@@ -10,7 +10,7 @@ rwanda$business_start <- as.numeric(rwanda$business_start)
 rwanda <- subset(rwanda, select=c("camp_name","competition","num_employee","market_condition","market_security","cash_food_local", 
                                   "outside_job", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
                                   "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
-                                  "key_good_demand_change","avg_customers","sell_food_assistance","finances_care","x", "y"))
+                                  "key_good_demand_change","avg_customers","x", "y"))
 rwanda = rwanda[rwanda$x > 29,]
 rwanda = rwanda[rwanda$x < 30,]
 
@@ -18,7 +18,7 @@ mug <- rwanda[rwanda$camp_name == 'mugombwa',]
 kim <- rwanda[rwanda$camp_name == 'kigeme',]
 
 
-vars <- c("camp_name","num_employee","market_condition","market_security","cash_food_local", 
+vars <- c("camp_name","num_employee","market_condition", 
           "outside_job","competition", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
           "entrepreneurship_training", "training_grow", "business_leave_camp","leave_camp_support_business", "id_problem_fequency",
           "key_good_demand_change","avg_customers","x", "y")
