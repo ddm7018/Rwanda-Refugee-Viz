@@ -14,35 +14,41 @@ options(scipen=999)
 options(warn=0)
 
 #loading in the dataset and preprocessing data
-rwanda                                                         <- read.csv("../survey1.csv", header = TRUE)
-rwanda = rwanda[rwanda$x > 29,]
-rwanda = rwanda[rwanda$x < 30,]
-
+rwanda                                                         <- read.csv("../survey2.csv", header = TRUE)
 
 rwanda$business_start[rwanda$business_start == '########']     <- NA
-rwanda$sell_food_assistance[rwanda$sell_food_assistance == ""] <- NA
+#rwanda$sell_food_assistance[rwanda$sell_food_assistance == ""] <- NA
 rwanda$outside_job                                             <- as.numeric(rwanda$outside_job)
 rwanda$business_start <- as.numeric(rwanda$business_start)
 
+#sellfoodassistance is the issue
+
 rwanda <- subset(rwanda, select=c("camp_name","competition","num_employee","market_condition","market_security","cash_food_local", 
                                   "outside_job", "income_compare","business_start", "customer_locations", "customer_locations_camp_change",
-                                  "entrepreneurship_training", "training_grow", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
-                                  "key_good_demand_change","avg_customers","sell_food_assistance","finances_care","x", "y"))
+                                  "entrepreneurship_training", "business_leave_camp" ,"leave_camp_support_business", "id_problem_fequency",
+                                  "key_good_demand_change","avg_customers","x", "y","finances_care_underbed","finances_care_remmitances","finances_care_mobile","finances_care_other_text", "training_grow_financing", "training_grow_training",
+                                  "business_type_clothing","sell_food_assistance","business_type_grocery", "business_type_restaurant", "business_type_craft","ibs_comm", "ibs_saco", "ibs_mobile", "ibs_microloan","ibs_nobank"))
 mug <- rwanda[rwanda$camp_name == 'mugombwa',]
 kim <- rwanda[rwanda$camp_name == 'kigeme',]
+
+
+
 
 run_linear_regression_models <- function(data){
 #linear regression, DV ~ IV, predicting business_start from avg_customer (not signficant)
 linear.model <- lm(business_start ~ avg_customers, data = data)
 print(summary(linear.model))
 
+
 #linear regression, DV ~ .(all variables), seeing if any other variables are signficant to business_start(none are signficant)
 # linear.model1 <- lm(business_start ~ ., data = data)
 # print(summary(linear.model1))
 
 #linear regression, DV ~ IV1 + IV2 + IV3 + IV4, key good demand change and customer change camp change are signficant to predicting num of employees
-linear.model2 <- lm(num_employee ~ key_good_demand_change + customer_locations_camp_change + x +y, data = data)
+linear.model2 <- lm(num_employee ~ key_good_demand_change + customer_locations_camp_change + market_security, data = data)
 print(summary(linear.model2))
+par(mfrow = c(2, 2)) 
+plot(linear.model2)
 
 #linear regression, DV ~ IV, predicting average customers from x and y, not signficant
 linear.model3 <- lm(avg_customers ~ x + y , data = data)
@@ -63,28 +69,25 @@ run_linear_regression_models(kim)
 
 #reloading the data for logistic regression analysis
 
+#recheck
+kim$sell_food_assistance <- NULL
+
+log.model1 <- glm(sell_food_assistance ~ outside_job, data = mug, family=binomial)
+print(summary(log.model1))
 
 run_logistic_regression_models <- function(data){
-  
-  # #glm is general logistical models, when you specifict the family as binomial its becomes logistric regression
-  # #outside job is a strong predictor of sell food assistance
-  log.model1 <- glm(sell_food_assistance ~ outside_job, data = rwanda, family=binomial)
-  print(summary(log.model1))
-  
-  
+
   # #logistic regression: avg customer is not a strong predictor of competition
   log.model2 <- glm(competition ~ avg_customers, data = data, family=binomial)
   print(summary(log.model2))
   
   # #logistic regression: business start is not a strong predictor of fincances care
-  log.model3 <- glm(finances_care ~ business_start, data = data, family=binomial)
+  log.model3 <- glm(finances_care_mobile ~ business_start, data = data, family=binomial)
   print(summary(log.model3))
   
 }
 run_logistic_regression_models(kim)
 run_logistic_regression_models(mug)
-
-kim$sell_food_assistance <- NULL
 
 run_classfication_models <- function(data, print = FALSE){
 
@@ -133,30 +136,23 @@ print(sprintf("Classfication tree - predicting key_good_demand_change accuracy i
 run_classfication_models(mug)
 run_classfication_models(kim)
 
-
-mug$finances_care <- NULL
-mug$sell_food_assistance <- as.numeric(mug$sell_food_assistance)
-mug$market_security <- NULL
-
-#finance care was not collected for this camp and sell_food assitance has some bug
-kim$finances_care <- NULL
-kim$market_security <- NULL
-kim$cash_food_local <- NULL
-
-
 run_classfication_by_ele <- function(data, ele){
   set.seed(100);
   data$business_start <-NULL
-  tune.model1 <- eval(parse(text=paste0("tune.svm(",ele,"~ . ,data=data)")))
+
+  tune.model1 <- eval(parse(text=paste0("tune.svm(as.factor(",ele,") ~ . ,data=data)")))
   val <- round((1-tune.model1$best.performance),3)
-  #plot(tune.model1$best.model, x ~ y, data= data)
-  
-  tune.model2 <- eval(parse(text=paste0("tune.nnet(",ele," ~ . , data = data, ,linout=FALSE, size=10, trace = FALSE)")))
+
+  tune.model2 <- eval(parse(text=paste0("tune.nnet(as.factor(",ele,") ~ . , data = data, ,linout=FALSE, size=5, trace = FALSE)")))
   val1 <- round((1-tune.model2$best.performance),3)
-  tune.model3 <- eval(parse(text=paste0("tune.rpart(",ele,"~ . ,data=data)")))
+
+  tune.model3 <- eval(parse(text=paste0("tune.rpart(as.factor(",ele,") ~ . ,data=data)")))
   val2 <- round((1-tune.model3$best.performance),3)
-  print(sprintf("%s : %s, %s,  %s",ele,val ,val1, val2))
+
+
+  print(sprintf("%s, %s, %s,  %s",ele,val ,val1, val2))
 }
+
 run_machine_learning_2 <- function(data, remove_camp = TRUE){
 coln <- c()
 for(ele in colnames(data)){
@@ -174,11 +170,16 @@ for(ele in coln ){
 }
 }
 
+mug$ibs_comm <- NULL
+mug$ibs_microloan <- NULL
+mug$business_type_craft <- NULL
+mug$sell_food_assistance <- NULL
+mug$market_security <- NULL
+
+kim$cash_food_local <- NULL
+
 suppressWarnings(run_machine_learning_2(mug))
 suppressWarnings(run_machine_learning_2(kim))
-
-
-
 
 
 
