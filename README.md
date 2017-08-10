@@ -1,3 +1,3 @@
 #Rwanda Refugee Geovisualization
 
-updated Aug 9 2017
+Using classfication and linear regression models to examine patterns in economic data collect from the Mugombwa and Kigeme refugue camps in Rwanda. UNHCR along with Rochester Institue of Technology collected economic data from 100-150 business. Data contains attributes like competition, type of banking services, monthly income changes. The data was then preprocessed and geospatially visualizied. Decision tree classification along with linear regression was conducted across all the variables to extract meaningful patterns. The most important findings are summarized in the attached paper. The link contains a Shiny application allowing individuals to geospatially explore the data along with run their own classfication and linear regression models.
